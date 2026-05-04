@@ -8,6 +8,7 @@ mod view;
 
 use gpui::{App, actions};
 
+pub use status_item::DatabaseViewerStatusItem;
 pub use view::DatabaseViewerView;
 
 actions!(
