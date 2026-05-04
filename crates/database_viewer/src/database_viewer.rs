@@ -8,6 +8,8 @@ mod view;
 
 use gpui::{App, actions};
 
+pub use view::DatabaseViewerView;
+
 actions!(
     database_viewer,
     [
