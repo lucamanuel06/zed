@@ -6,7 +6,8 @@ mod schema;
 mod status_item;
 mod view;
 
-use gpui::{App, actions};
+use gpui::{App, Context, Window, actions};
+use workspace::Workspace;
 
 pub use status_item::DatabaseViewerStatusItem;
 pub use view::DatabaseViewerView;
@@ -21,6 +22,25 @@ actions!(
 );
 
 /// Initializes the database viewer feature. Call once during app startup.
-pub fn init(_cx: &mut App) {
-    // Action registration and status bar wiring are added in later tasks.
+pub fn init(cx: &mut App) {
+    cx.observe_new(
+        |workspace: &mut Workspace, _window, _cx: &mut Context<Workspace>| {
+            workspace.register_action(open_database_viewer);
+        },
+    )
+    .detach();
+}
+
+fn open_database_viewer(
+    workspace: &mut Workspace,
+    _: &Open,
+    window: &mut Window,
+    cx: &mut Context<Workspace>,
+) {
+    if let Some(existing) = workspace.item_of_type::<DatabaseViewerView>(cx) {
+        workspace.activate_item(&existing, true, true, window, cx);
+        return;
+    }
+    let view = cx.new(|cx| DatabaseViewerView::new(cx));
+    workspace.add_item_to_active_pane(Box::new(view), None, true, window, cx);
 }
