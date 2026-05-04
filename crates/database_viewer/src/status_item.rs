@@ -1,35 +1,32 @@
-use gpui::{Context, IntoElement, ParentElement, Render, WeakEntity, Window, div};
+use gpui::{Context, IntoElement, ParentElement, Render, Window, div};
 use ui::{IconButton, IconName, IconSize, Tooltip, prelude::*};
-use workspace::{StatusItemView, Workspace, item::ItemHandle};
+use workspace::{StatusItemView, item::ItemHandle};
 
 use crate::Open;
 
-pub struct DatabaseViewerStatusItem {
-    workspace: WeakEntity<Workspace>,
-}
+pub struct DatabaseViewerStatusItem;
 
 impl DatabaseViewerStatusItem {
-    pub fn new(workspace: &Workspace) -> Self {
-        Self {
-            workspace: workspace.weak_handle(),
-        }
+    pub fn new() -> Self {
+        Self
+    }
+}
+
+impl Default for DatabaseViewerStatusItem {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
 impl Render for DatabaseViewerStatusItem {
-    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let workspace = self.workspace.clone();
+    fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
         div().child(
             IconButton::new("database-viewer-status", IconName::DatabaseZap)
                 .icon_size(IconSize::Small)
                 .tooltip(|_window, cx| Tooltip::for_action("Open Database Viewer", &Open, cx))
-                .on_click(cx.listener(move |_, _, window, cx| {
-                    if let Some(workspace) = workspace.upgrade() {
-                        workspace.update(cx, |workspace, cx| {
-                            workspace.dispatch_action(Box::new(Open), window, cx);
-                        });
-                    }
-                })),
+                .on_click(|_, window, cx| {
+                    window.dispatch_action(Box::new(Open), cx);
+                }),
         )
     }
 }

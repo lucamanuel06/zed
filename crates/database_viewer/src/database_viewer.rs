@@ -6,7 +6,7 @@ mod schema;
 mod status_item;
 mod view;
 
-use gpui::{App, Context, Window, actions};
+use gpui::{App, AppContext, Context, Window, actions};
 use workspace::Workspace;
 
 pub use status_item::DatabaseViewerStatusItem;
